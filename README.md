@@ -52,38 +52,42 @@ i.e. yeast_results):
 --expression-names GSE125162 GSE144820 --num-sampling-iters 500`
 
 ### B. subtilis
-Single-cell gene expression datasets obtained from NCBI GEO (GSM4594095 & GSM4594096). 
+Microarray gene expression datasets obtained from NCBI GEO GSE27219 (B1) & GSE67023 (B2). 
 Prior-known TF-target gene and gold standard interactions matrix were obtained from the Subtiwiki database (Faria et al. 2016).
 
 To carry out inference using the hyperparameter configurations used in the paper, use the following scripts for
-GSM4594095 and GSM4594096 respectively, replacing {} with the desired cross validation split (1, 2, 3, 4 or 5):
+B1 and B2 respectively, replacing {} with the desired cross validation split (1, 2, 3, 4 or 5):
 
-#### GSM4594095
-`python -m training.train --expression-path data/bsubtilis_sc/bsubtilis_single_cell_m14_v2.h5ad
---gene-tf-prior-path data/bsubtilis_sc/bsubtilis_prior_from_gs_20_{}.h5ad --gd-type full_dataset --batch-size 0
---num-epochs 10000 --save-period 10000 --save-dir experiments/bsubtilis/m14/split_{} --module-name Gaussian3M --lr 0.1
---min-lr 0.1 --clip-norm 0.0001 --min-prior-hparam 0.0005 --max-prior-hparam 0.9995 --use-gpu --prior-std-logit-A 2.0
---prior-std-log-U 2 --val-after 100 --first-100-val-after 10 --val-loss-type neg_mll --num-mll-samples 100
---val-kl-anneal-factor 1 --num-annealing-iters 999999 --initial-annealing-factor 10 --guide-max-std-log-U 2`
+#### GSE27219 (B1)
+"python -m training.train --expression-path data/bsubtilis/bsubtilis_expression_b1.h5ad",
+    "--gene-tf-prior-path data/bsubtilis/cv_training_prior_{}.h5ad --gd-type full_dataset",
+    "--batch-size 0 --num-epochs 4000",
+    "--save-period 4000 --save-dir experiments/bsubtilis/B1/split_{} --module-name Gaussian3M --lr 0.1 --min-lr 0.1 --clip-norm 0.0001",
+    "--min-prior-hparam 0.0005 --max-prior-hparam 0.9995 --use-gpu --prior-std-logit-A {2} --prior-std-log-U {3}",
+    "--val-after 100 --first-100-val-after 10 --val-gold-standard-path data/bsubtilis/cv_validation_gs_{}.tsv",
+    "--num-auprc-logit-sampling-iters 100",
+    "--val-kl-anneal-factor 1 --num-annealing-iters 999999 --initial-annealing-factor {4} --guide-max-std-log-U 2"
 
-#### GSM4594096
-`python -m training.train --expression-path data/bsubtilis_sc/bsubtilis_single_cell_m15_v2.h5ad
---gene-tf-prior-path data/bsubtilis_sc/bsubtilis_prior_from_gs_20_{}.h5ad --gd-type full_dataset --batch-size 0
---num-epochs 10000 --save-period 10000 --save-dir experiments/bsubtilis/m15/split_{} --module-name Gaussian3M --lr 0.1
---min-lr 0.1 --clip-norm 0.0001 --min-prior-hparam 0.0005 --max-prior-hparam 0.9995 --use-gpu --prior-std-logit-A 2.0
---prior-std-log-U 2 --val-after 100 --first-100-val-after 10 --val-loss-type neg_mll --num-mll-samples 100
---val-kl-anneal-factor 1 --num-annealing-iters 999999 --initial-annealing-factor 10 --guide-max-std-log-U 2`
+#### GSE67023 (B2)
+"python -m training.train --expression-path data/bsubtilis/bsubtilis_expression_b2.h5ad",
+    "--gene-tf-prior-path data/bsubtilis/cv_training_prior_{}.h5ad --gd-type full_dataset",
+    "--batch-size 0 --num-epochs 4000",
+    "--save-period 4000 --save-dir experiments/bsubtilis/B2/split_{} --module-name Gaussian3M --lr 0.1 --min-lr 0.1 --clip-norm 0.0001",
+    "--min-prior-hparam 0.0005 --max-prior-hparam 0.9995 --use-gpu --prior-std-logit-A {2} --prior-std-log-U {3}",
+    "--val-after 100 --first-100-val-after 10 --val-gold-standard-path data/bsubtilis/cv_validation_gs_{}.tsv",
+    "--num-auprc-logit-sampling-iters 100",
+    "--val-kl-anneal-factor 1 --num-annealing-iters 999999 --initial-annealing-factor {4} --guide-max-std-log-U 2"
 
 To evaluate inferred GRNs and obtain an inferred consensus GRN (again, replace {} with the desired cross validation split
 (1, 2, 3, 4 or 5)):
-`python evaluate.py --exp-dirs experiments/bsubtilis/m14/split_{} experiments/bsubtilis/m15/split_{}
---gold-standard-path data/bsubtilis_sc/bsubtilis_remaining_gs_20_{}.tsv --output-dir bsubtilis/results/split_{}
+`python evaluate.py --exp-dirs experiments/bsubtilis/B1/split_{} experiments/bsubtilis/B1/split_{}
+--gold-standard-path data/bsubtilis/validation_gs_{}.tsv --output-dir bsubtilis/results/B1/split_{}
 --expression-names m14 m15`
 
 An easy way of running this script for all splits (1-5 in this case) is as follows:
-`for i in {1..5}; do python evaluate.py --exp-dirs experiments/bsubtilis/m14/split_$i experiments/bsubtilis/m15/split_$i
---gold-standard-path data/bsubtilis_sc/bsubtilis_remaining_gs_20_$i.tsv
---output-dir experiments/bsubtilis/results/split_$i --expression-names m14 m15`
+`for i in {1..5}; do python evaluate.py --exp-dirs experiments/bsubtilis/B1/split_$i experiments/bsubtilis/B1/split_$i
+--gold-standard-path data/bsubtilis/validation_gs_$i.tsv
+--output-dir experiments/bsubtilis/results/B1/split_$i --expression-names B1 B2`
 
 
 ## Hyperparameter search
