@@ -51,7 +51,7 @@ i.e. yeast_results):
 --gold-standard-path data/yeast/gold_standard.tsv --output-dir experiments/yeast/results
 --expression-names GSE125162 GSE144820 --num-sampling-iters 500`
 
-### B. subtilis
+### B. subtillis
 Microarray gene expression datasets obtained from NCBI GEO GSE27219 (B1) & GSE67023 (B2). 
 Prior-known TF-target gene and gold standard interactions matrix were obtained from the Subtiwiki database (Faria et al. 2016).
 
@@ -82,7 +82,7 @@ To evaluate inferred GRNs and obtain an inferred consensus GRN (again, replace {
 (1, 2, 3, 4 or 5)):
 `python evaluate.py --exp-dirs experiments/bsubtilis/B1/split_{} experiments/bsubtilis/B1/split_{}
 --gold-standard-path data/bsubtilis/validation_gs_{}.tsv --output-dir bsubtilis/results/B1/split_{}
---expression-names m14 m15`
+--expression-names B1 B2`
 
 An easy way of running this script for all splits (1-5 in this case) is as follows:
 `for i in {1..5}; do python evaluate.py --exp-dirs experiments/bsubtilis/B1/split_$i experiments/bsubtilis/B1/split_$i
