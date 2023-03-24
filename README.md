@@ -59,24 +59,24 @@ To carry out inference using the hyperparameter configurations used in the paper
 B1 and B2 respectively, replacing {} with the desired cross validation split (1, 2, 3, 4 or 5):
 
 #### GSE27219 (B1)
-"python -m training.train --expression-path data/bsubtilis/bsubtilis_expression_b1.h5ad",
-    "--gene-tf-prior-path data/bsubtilis/cv_training_prior_{}.h5ad --gd-type full_dataset",
-    "--batch-size 0 --num-epochs 4000",
-    "--save-period 4000 --save-dir experiments/bsubtilis/B1/split_{} --module-name Gaussian3M --lr 0.1 --min-lr 0.1 --clip-norm 0.0001",
-    "--min-prior-hparam 0.0005 --max-prior-hparam 0.9995 --use-gpu --prior-std-logit-A {2} --prior-std-log-U {3}",
-    "--val-after 100 --first-100-val-after 10 --val-gold-standard-path data/bsubtilis/cv_validation_gs_{}.tsv",
-    "--num-auprc-logit-sampling-iters 100",
-    "--val-kl-anneal-factor 1 --num-annealing-iters 999999 --initial-annealing-factor {4} --guide-max-std-log-U 2"
+`python -m training.train --expression-path data/bsubtilis/bsubtilis_expression_b1.h5ad,
+    --gene-tf-prior-path data/bsubtilis/cv_training_prior_{}.h5ad --gd-type full_dataset,
+    --batch-size 0 --num-epochs 4000,
+    --save-period 4000 --save-dir experiments/bsubtilis/B1/split_{} --module-name Gaussian3M --lr 0.1 --min-lr 0.1 --clip-norm 0.0001,
+    --min-prior-hparam 0.0005 --max-prior-hparam 0.9995 --use-gpu --prior-std-logit-A {2} --prior-std-log-U {3},
+    --val-after 100 --first-100-val-after 10 --val-gold-standard-path data/bsubtilis/cv_validation_gs_{}.tsv,
+    --num-auprc-logit-sampling-iters 100,
+    --val-kl-anneal-factor 1 --num-annealing-iters 999999 --initial-annealing-factor {4} --guide-max-std-log-U 2`
 
 #### GSE67023 (B2)
-"python -m training.train --expression-path data/bsubtilis/bsubtilis_expression_b2.h5ad",
-    "--gene-tf-prior-path data/bsubtilis/cv_training_prior_{}.h5ad --gd-type full_dataset",
-    "--batch-size 0 --num-epochs 4000",
-    "--save-period 4000 --save-dir experiments/bsubtilis/B2/split_{} --module-name Gaussian3M --lr 0.1 --min-lr 0.1 --clip-norm 0.0001",
-    "--min-prior-hparam 0.0005 --max-prior-hparam 0.9995 --use-gpu --prior-std-logit-A {2} --prior-std-log-U {3}",
-    "--val-after 100 --first-100-val-after 10 --val-gold-standard-path data/bsubtilis/cv_validation_gs_{}.tsv",
-    "--num-auprc-logit-sampling-iters 100",
-    "--val-kl-anneal-factor 1 --num-annealing-iters 999999 --initial-annealing-factor {4} --guide-max-std-log-U 2"
+`python -m training.train --expression-path data/bsubtilis/bsubtilis_expression_b2.h5ad,
+    --gene-tf-prior-path data/bsubtilis/cv_training_prior_{}.h5ad --gd-type full_dataset,
+    --batch-size 0 --num-epochs 4000,
+    --save-period 4000 --save-dir experiments/bsubtilis/B2/split_{} --module-name Gaussian3M --lr 0.1 --min-lr 0.1 --clip-norm 0.0001,
+    --min-prior-hparam 0.0005 --max-prior-hparam 0.9995 --use-gpu --prior-std-logit-A {2} --prior-std-log-U {3},
+    --val-after 100 --first-100-val-after 10 --val-gold-standard-path data/bsubtilis/cv_validation_gs_{}.tsv,
+    --num-auprc-logit-sampling-iters 100,
+    --val-kl-anneal-factor 1 --num-annealing-iters 999999 --initial-annealing-factor {4} --guide-max-std-log-U 2`
 
 To evaluate inferred GRNs and obtain an inferred consensus GRN (again, replace {} with the desired cross validation split
 (1, 2, 3, 4 or 5)):
