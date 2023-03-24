@@ -51,7 +51,7 @@ i.e. yeast_results):
 --gold-standard-path data/yeast/gold_standard.tsv --output-dir experiments/yeast/results
 --expression-names GSE125162 GSE144820 --num-sampling-iters 500`
 
-### B. subtillis
+### B. subtilis
 Microarray gene expression datasets obtained from NCBI GEO GSE27219 (B1) & GSE67023 (B2). 
 Prior-known TF-target gene and gold standard interactions matrix were obtained from the Subtiwiki database (Faria et al. 2016).
 
