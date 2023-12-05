@@ -8,12 +8,50 @@ from collections import OrderedDict
 from functools import reduce
 from inferelator.postprocessing.model_metrics import CombinedMetric as CM
 
+def log_normal_to_mean_and_var(mean_log: torch.tensor, std_log: torch.tensor, num_samples:int):
+    mean_calculated = torch.exp(mean_log + (std_log ** 2) / 2)
+    var_calculated = (torch.exp(std_log ** 2) - 1) * torch.exp(2 * mean_log + std_log ** 2)
+    
+    return mean_calculated, var_calculated
+
 def logit_normal_to_mean_and_var(mean_logit: torch.tensor, std_logit: torch.tensor, num_samples: int):
     logit_variable = torch.distributions.Normal(mean_logit, std_logit).sample((num_samples,))
     variable = torch.sigmoid(logit_variable)
     var, mean = torch.var_mean(variable, 0)
     return mean, var
 
+def get_U_means_dfs(exp_dirs, num_sampling_iters=100):
+    all_U_means = []
+    for dname in exp_dirs:
+        pyro.get_param_store().clear()
+        pyro.get_param_store().load(os.path.join(dname, "best_iter.params"), map_location="cpu")
+        U_means, U_vars = log_normal_to_mean_and_var(
+            pyro.get_param_store()['U_means'].detach(),
+            pyro.get_param_store()['U_stds'].detach(),
+            num_sampling_iters
+        )
+        print("Shape of U_means:", U_means.shape)
+
+        pyro.get_param_store().clear()
+        U_obs = pd.read_csv(os.path.join(dname, "U_obs_names.csv"), sep=",", header=None)
+        U_vars = pd.read_csv(os.path.join(dname, "U_var_names.csv"), sep=",", header=None)
+        print("Shape of U_means after transformation:", U_means.shape)
+
+        U_means_df = pd.DataFrame(data=U_means.cpu().numpy(), columns=U_vars[0], index=U_obs[0])
+        all_U_means.append(U_means_df)
+
+        combined_U_means = reduce(lambda a, b: a.add(b, fill_value=0), all_U_means) / len(all_U_means)
+        combined_U_means_df = pd.DataFrame(
+            data=combined_U_means,
+            columns=U_vars[0],
+            index=U_obs[0]
+        )
+
+        U_means_dfs = OrderedDict()
+        for i, dname in enumerate(exp_dirs):
+            U_means_dfs[dname] = all_U_means[i]
+        U_means_dfs['combined'] = combined_U_means_df
+        return U_means_dfs
 
 def get_A_means_dfs(exp_dirs, num_sampling_iters=100):
     all_A_means = []
@@ -67,6 +105,15 @@ def main():
             A_means_dfs[name].to_csv(
                 os.path.join(args.output_dir, "inferred_{}_grn.tsv".format(args.expression_names[i])), sep="\t"
             )
+    U_means_dfs = get_U_means_dfs(args.exp_dirs, args.num_sampling_iters)
+    for i, (name, df) in enumerate(U_means_dfs.items()):
+        if name == "combined":
+            U_means_dfs[name].to_csv(os.path.join(args.output_dir, "inferred_consensus_tfa.tsv"), sep="\t")
+        else:
+            U_means_dfs[name].to_csv(
+                os.path.join(args.output_dir, "inferred_{}_tfa.tsv".format(args.expression_names[i])), sep="\t"
+            )
+            
     if args.gold_standard_path is not None:
         auprcs = get_separate_and_combined_auprcs_A(A_means_dfs, args.gold_standard_path)
         with open(os.path.join(args.output_dir, "auprcs.txt"), 'w') as f:
