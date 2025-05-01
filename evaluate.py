@@ -30,28 +30,26 @@ def get_U_means_dfs(exp_dirs, num_sampling_iters=100):
             pyro.get_param_store()['U_stds'].detach(),
             num_sampling_iters
         )
-        print("Shape of U_means:", U_means.shape)
 
         pyro.get_param_store().clear()
         U_obs = pd.read_csv(os.path.join(dname, "U_obs_names.csv"), sep=",", header=None)
         U_vars = pd.read_csv(os.path.join(dname, "U_var_names.csv"), sep=",", header=None)
-        print("Shape of U_means after transformation:", U_means.shape)
 
         U_means_df = pd.DataFrame(data=U_means.cpu().numpy(), columns=U_vars[0], index=U_obs[0])
         all_U_means.append(U_means_df)
 
-        combined_U_means = reduce(lambda a, b: a.add(b, fill_value=0), all_U_means) / len(all_U_means)
-        combined_U_means_df = pd.DataFrame(
-            data=combined_U_means,
-            columns=U_vars[0],
-            index=U_obs[0]
-        )
+    combined_U_means = reduce(lambda a, b: a.add(b, fill_value=0), all_U_means) / len(all_U_means)
+    combined_U_means_df = pd.DataFrame(
+        data=combined_U_means,
+        columns=U_vars[0],
+        index=U_obs[0]
+    )
 
-        U_means_dfs = OrderedDict()
-        for i, dname in enumerate(exp_dirs):
-            U_means_dfs[dname] = all_U_means[i]
-        U_means_dfs['combined'] = combined_U_means_df
-        return U_means_dfs
+    U_means_dfs = OrderedDict()
+    for i, dname in enumerate(exp_dirs):
+        U_means_dfs[dname] = all_U_means[i]
+    U_means_dfs['combined'] = combined_U_means_df
+    return U_means_dfs
 
 def get_A_means_dfs(exp_dirs, num_sampling_iters=100):
     all_A_means = []
